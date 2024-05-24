@@ -12,9 +12,9 @@ eg.
 
 Means:
 
-base = 10
-C Poly = x^4 + 5*x^3 + 7*x^2 + 5*x + 1
-D Poly = x^3 + 2*x^2 + 2*x + 1
+base = 10 <br />
+C Poly = x^4 + 5*x^3 + 7*x^2 + 5*x + 1 <br />
+D Poly = x^3 + 2*x^2 + 2*x + 1 <br />
 
 
 Contents

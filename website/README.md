@@ -4,7 +4,7 @@ Cownoise.com
 
 Introduction
 ------------
-Factors database for numbers of the form a<sup>n</sup> &plusmn 1. Currently there are 856257641 table entries. Live reports and factor submission. 
+Factors database for numbers of the form a<sup>n</sup> +/- 1. Currently there are 856257641 table entries. Live reports and factor submission. 
 
 
 Noteworthy Numbers

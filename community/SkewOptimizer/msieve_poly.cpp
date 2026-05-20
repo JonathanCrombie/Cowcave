@@ -1,11 +1,13 @@
 // all source from msieve svn 839.  type "svn co -r 839 http://svn.code.sf.net/p/msieve/code/trunk svn839" to get it.
 
 #include <stdlib.h>
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdint.h>
 #include <gmp.h>
 #include <string.h>
-#include <values.h>
+#include <limits.h>
+#include <float.h>
 
 // msieve stuff
 #define MAX_POLY_DEGREE 8
@@ -531,14 +533,7 @@ static dd_complex_t cplx_div(dd_complex_t a, dd_complex_t b) {
 }
 
 static uint32_t mp_mod64(uint64_t a, uint32_t n) {
-
-	uint32_t hi = (uint32_t)(a >> 32);
-	uint32_t lo = (uint32_t)a;
-
-	__asm__("divl %2"
-	     : "+d"(hi), "+a"(lo)
-	     : "rm"(n) : "cc");
-	return hi;
+    return (uint32_t)(a % n);
 }
 
 static uint32_t mp_modmul_1(uint32_t a, uint32_t b, uint32_t n) {
@@ -691,7 +686,7 @@ static void gmp2mp(mpz_t src, mp_t *dest) {
 	mp_clear(dest);
 	mpz_export(dest->val, &count, -1, sizeof(uint32_t),
 			0, (size_t)0, src);
-	dest->nwords = count;
+	dest->nwords = (uint32_t)count;
 }
 
 static dd_t dd_gmp2dd(mpz_t x) {
@@ -705,24 +700,6 @@ static dd_t dd_gmp2dd(mpz_t x) {
 		mpx.sign = NEGATIVE;
 
 	return dd_signed_mp2dd(&mpx);
-}
-
-static dd_precision_t dd_set_precision_ieee(void) {
-	dd_precision_t old_prec, new_prec;
-	__asm__ volatile ("fnstcw %0":"=m"(old_prec));
-	new_prec = (old_prec & ~0x0300) | 0x0200;
-	__asm__ volatile ("fldcw %0": :"m"(new_prec));
-	return old_prec;
-}
-
-static void dd_clear_precision(dd_precision_t old_prec) {
-	__asm__ volatile ("fldcw %0": :"m"(old_prec));
-}
-
-static uint32_t dd_precision_is_ieee(void) {
-	dd_precision_t prec;
-	__asm__ volatile ("fnstcw %0":"=m"(prec));
-	return ((prec & ~0x0300) == 0x0200) ? 1 : 0;
 }
 
 static void mpz_poly_init(mpz_poly_t * poly) {
@@ -1229,13 +1206,6 @@ void analyze_one_poly_hook( long degree, mpz_t* acoeffs, mpz_t* rcoeffs, double 
 	uint32_t i;
 	poly_config_t config;
 	poly_select_t s;
-	dd_precision_t prec = 0;
-	uint32_t prec_changed = 0;
-
-	if (!dd_precision_is_ieee()) {
-		prec_changed = 1;
-		prec = dd_set_precision_ieee();
-	}
 
 	poly_config_init(&config);
 	poly_select_init(&s);
@@ -1259,9 +1229,6 @@ void analyze_one_poly_hook( long degree, mpz_t* acoeffs, mpz_t* rcoeffs, double 
 
 	poly_config_free(&config);
 	poly_select_free(&s);
-
-	if (prec_changed)
-		dd_clear_precision(prec);
 }
 
 /*------------------------------------------------------------------*/

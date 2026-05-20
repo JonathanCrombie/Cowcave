@@ -34,8 +34,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
-#include <values.h>
+#include <stdint.h>
 #include <gmp.h>
 #include <string.h>
 #include <ctype.h>
@@ -626,7 +625,7 @@ void TFDivideOut( mpz_t running_N, long ldenominator, char* running_N_status, mp
 }
 
 
-// Compute the prime factorization of a general number where square_root( the_number ) < MAXLONG - 255
+// Compute the prime factorization of a general number where square_root( the_number ) < INT32_MAX - 255
 void Factorize( mpz_t the_number, struct factor_infos* Factor_Infos ) {
   if ( Factor_Infos == NULL )
     return;
@@ -645,7 +644,7 @@ void Factorize( mpz_t the_number, struct factor_infos* Factor_Infos ) {
   mpz_init( square_root );
   mpz_sqrt( square_root, running_N );
 
-  if ( mpz_cmp_ui( square_root, MAXLONG - 255 ) > 0 ) {
+  if ( mpz_cmp_ui( square_root, INT32_MAX - 255 ) > 0 ) {
     printf( "Internal Error:  Trying to factorize too big a number.\n" );
     mpz_clear( square_root );
     mpz_clear( running_N );
@@ -947,7 +946,7 @@ long NumberOfDigits( mpz_t the_number ) {
 // Just call mpz_pow_ui() with some error checking first
 void mpz_pow( mpz_t result, mpz_t b, mpz_t p ) {
 
-  if ( mpz_cmp_ui( p, ULONG_MAX ) > 0 ) {
+  if ( mpz_cmp_ui( p, UINT32_MAX ) > 0 ) {
     printf( "Error: exponent too large in power function.\n" );
     return;
   }

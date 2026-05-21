@@ -167,9 +167,9 @@ static void usage()
 
 static int autodet(int *x, int *y, uint * n, mpz_t N)
 {
-	const int flen = 32;
-	const int maxp = 2000;	/* Limit for prime divisors */
-	const int maxbase = 1000;	/* Limit for bases to try */
+	enum { flen = 32 };
+	enum { maxp = 2000 };	/* Limit for prime divisors */
+	enum { maxbase = 1000 };	/* Limit for bases to try */
 	int p[flen], v[flen];	/* p are primes, v exponents */
 	int a, b, i, j, k;
 	mpz_t R;			/* Remaining cofactor */
@@ -565,8 +565,8 @@ static void generate_std(mpz_t N, mpz_t x, mpz_t y, int n, int sign, int *degree
 		*difficulty = log10(dx) * 16. * k;
 	} else {
 		/* Make polynomial without using any algebraic factor */
-		const int maxp = 10000;
-		const int flen = 15;	/* Only examine 16 different factors
+		enum { maxp = 10000 };
+		enum { flen = 15 };	/* Only examine 16 different factors
 								 (including cofactor). Should easily suffice */
 		int p[flen], vp[flen], q[flen], vq[flen], bestp, bestq;
 		int l, m;

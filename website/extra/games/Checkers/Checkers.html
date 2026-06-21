@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkers</title>
+  <link rel="stylesheet" href="Checkers.css">
+</head>
+<body>
+  <main class="game-shell">
+    <section class="game-stage" aria-label="Checkers board">
+      <div class="topbar">
+        <div>
+          <p class="eyebrow">Checkers</p>
+          <h1 id="statusText">Red to move</h1>
+        </div>
+        <div class="actions" aria-label="Game controls">
+          <button id="undoButton" type="button" title="Undo move">Undo</button>
+          <button id="resetButton" type="button" title="New game">New Game</button>
+        </div>
+      </div>
+
+      <div class="board-wrap">
+        <div id="board" class="board" aria-label="Playable checkers board"></div>
+        <div class="file-labels" aria-hidden="true">
+          <span>A</span><span>B</span><span>C</span><span>D</span>
+          <span>E</span><span>F</span><span>G</span><span>H</span>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side-panel" aria-label="Game information">
+      <section class="score-strip" aria-label="Score">
+        <div class="score red-score">
+          <span class="score-label">Red</span>
+          <strong id="redCount">12</strong>
+        </div>
+        <div class="score black-score">
+          <span class="score-label">Black</span>
+          <strong id="blackCount">12</strong>
+        </div>
+      </section>
+
+      <section class="turn-card" aria-label="Turn">
+        <span id="turnDot" class="turn-dot red"></span>
+        <div>
+          <span class="panel-label">Turn</span>
+          <strong id="turnLabel">Red</strong>
+        </div>
+      </section>
+
+      <section class="capture-card" aria-label="Capture state">
+        <span class="panel-label">State</span>
+        <strong id="captureLabel">Quiet board</strong>
+      </section>
+
+      <section class="moves-panel" aria-label="Move history">
+        <div class="panel-heading">
+          <span class="panel-label">Moves</span>
+          <strong id="moveCount">0</strong>
+        </div>
+        <ol id="moveHistory" class="move-history"></ol>
+      </section>
+    </aside>
+  </main>
+
+  <script src="Checkers.js"></script>
+</body>
+</html>

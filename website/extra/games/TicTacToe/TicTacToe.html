@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="TicTacToe.css" />
+  </head>
+  <body>
+    <main class="game">
+      <section class="panel" aria-labelledby="game-title">
+        <div class="header">
+          <div>
+            <p class="eyebrow">Classic board game</p>
+            <h1 id="game-title">Tic Tac Toe</h1>
+          </div>
+          <button class="reset-button" id="reset-score" type="button">Reset Score</button>
+        </div>
+
+        <div class="scoreboard" aria-label="Scoreboard">
+          <div>
+            <span class="score-label">Player X</span>
+            <strong id="score-x">0</strong>
+          </div>
+          <div>
+            <span class="score-label">Draws</span>
+            <strong id="score-draw">0</strong>
+          </div>
+          <div>
+            <span class="score-label">Player O</span>
+            <strong id="score-o">0</strong>
+          </div>
+        </div>
+
+        <p class="status" id="status" aria-live="polite">Player X's turn</p>
+
+        <div class="board" id="board" aria-label="Tic tac toe board">
+          <button class="cell" type="button" aria-label="Row 1 column 1"></button>
+          <button class="cell" type="button" aria-label="Row 1 column 2"></button>
+          <button class="cell" type="button" aria-label="Row 1 column 3"></button>
+          <button class="cell" type="button" aria-label="Row 2 column 1"></button>
+          <button class="cell" type="button" aria-label="Row 2 column 2"></button>
+          <button class="cell" type="button" aria-label="Row 2 column 3"></button>
+          <button class="cell" type="button" aria-label="Row 3 column 1"></button>
+          <button class="cell" type="button" aria-label="Row 3 column 2"></button>
+          <button class="cell" type="button" aria-label="Row 3 column 3"></button>
+        </div>
+
+        <button class="new-round-button" id="new-round" type="button">New Round</button>
+      </section>
+    </main>
+
+    <script src="TicTacToe.js"></script>
+  </body>
+</html>

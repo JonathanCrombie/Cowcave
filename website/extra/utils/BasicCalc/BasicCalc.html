@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculator</title>
+    <link rel="stylesheet" href="BasicCalc.css" />
+  </head>
+  <body>
+    <main class="app" aria-label="Calculator">
+      <section class="calculator">
+        <div class="display" aria-live="polite" aria-label="Calculator display">
+          <div class="expression" id="expression"></div>
+          <output class="result" id="result">0</output>
+        </div>
+
+        <div class="keys">
+          <button class="key key-muted" type="button" data-action="clear">AC</button>
+          <button class="key key-muted" type="button" data-action="delete">DEL</button>
+          <button class="key key-operator" type="button" data-value="**" aria-label="x to the power of y">x<sup>y</sup></button>
+          <button class="key key-operator" type="button" data-value="/">÷</button>
+
+          <button class="key" type="button" data-value="7">7</button>
+          <button class="key" type="button" data-value="8">8</button>
+          <button class="key" type="button" data-value="9">9</button>
+          <button class="key key-operator" type="button" data-value="*">×</button>
+
+          <button class="key" type="button" data-value="4">4</button>
+          <button class="key" type="button" data-value="5">5</button>
+          <button class="key" type="button" data-value="6">6</button>
+          <button class="key key-operator" type="button" data-value="-">−</button>
+
+          <button class="key" type="button" data-value="1">1</button>
+          <button class="key" type="button" data-value="2">2</button>
+          <button class="key" type="button" data-value="3">3</button>
+          <button class="key key-operator" type="button" data-value="+">+</button>
+
+          <button class="key key-wide" type="button" data-value="0">0</button>
+          <button class="key key-blank" type="button" aria-hidden="true" tabindex="-1" disabled></button>
+          <button class="key key-equals" type="button" data-action="calculate">=</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="BasicCalc.js"></script>
+  </body>
+</html>

@@ -1,0 +1,179 @@
+:root {
+  color-scheme: light;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --bg: #f4f6f8;
+  --panel: #ffffff;
+  --panel-edge: #d8dee6;
+  --text: #17202a;
+  --muted: #657080;
+  --key: #eef2f6;
+  --key-hover: #e2e8ef;
+  --operator: #0f766e;
+  --operator-hover: #0b655f;
+  --equals: #be123c;
+  --equals-hover: #a50f35;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.14), transparent 32%),
+    linear-gradient(315deg, rgba(190, 18, 60, 0.1), transparent 34%),
+    var(--bg);
+  color: var(--text);
+}
+
+button {
+  font: inherit;
+}
+
+.app {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.calculator {
+  width: min(100%, 360px);
+  border: 1px solid var(--panel-edge);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 24px 70px rgba(23, 32, 42, 0.16);
+  overflow: hidden;
+}
+
+.display {
+  min-height: 132px;
+  display: grid;
+  align-content: end;
+  gap: 8px;
+  padding: 24px;
+  background: #18212d;
+  color: #ffffff;
+  text-align: right;
+}
+
+.expression {
+  max-width: 100%;
+  min-width: 0;
+  min-height: 22px;
+  color: #b6c2d0;
+  font-size: 0.95rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overflow-wrap: normal;
+  white-space: normal;
+  word-break: normal;
+}
+
+.result {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overflow-wrap: normal;
+  white-space: normal;
+  word-break: normal;
+}
+
+.keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--panel-edge);
+}
+
+.key {
+  min-height: 72px;
+  border: 0;
+  border-radius: 0;
+  background: var(--key);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: 700;
+  transition:
+    background 140ms ease,
+    transform 80ms ease;
+}
+
+.key:hover {
+  background: var(--key-hover);
+}
+
+.key-blank {
+  cursor: default;
+  pointer-events: none;
+}
+
+.key-blank:hover {
+  background: var(--key);
+}
+
+.key.key-blank:active {
+  transform: none;
+}
+
+.key:active {
+  transform: scale(0.98);
+}
+
+.key:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: -3px;
+}
+
+.key-muted {
+  color: var(--muted);
+}
+
+.key-operator {
+  background: var(--operator);
+  color: #ffffff;
+}
+
+.key-operator:hover {
+  background: var(--operator-hover);
+}
+
+.key-equals {
+  background: var(--equals);
+  color: #ffffff;
+}
+
+.key-equals:hover {
+  background: var(--equals-hover);
+}
+
+.key-wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 420px) {
+  .app {
+    padding: 12px;
+  }
+
+  .display {
+    min-height: 120px;
+    padding: 20px;
+  }
+
+  .key {
+    min-height: 64px;
+  }
+}

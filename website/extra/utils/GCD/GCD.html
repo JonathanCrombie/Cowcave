@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Extended GCD</title>
+    <link rel="stylesheet" href="GCD.css">
+  </head>
+  <body>
+    <main class="page">
+      <h1>Extended GCD</h1>
+
+      <form class="calculator" autocomplete="off">
+        <div class="field">
+          <label for="value-a">A</label>
+          <textarea id="value-a" rows="1" wrap="off" spellcheck="false"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="value-b">B</label>
+          <textarea id="value-b" rows="1" wrap="off" spellcheck="false"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="value-gcd">GCD</label>
+          <textarea id="value-gcd" rows="1" wrap="off" readonly></textarea>
+        </div>
+
+        <div class="field">
+          <label for="value-m">M</label>
+          <textarea id="value-m" rows="1" wrap="off" readonly></textarea>
+        </div>
+
+        <div class="field">
+          <label for="value-n">N</label>
+          <textarea id="value-n" rows="1" wrap="off" readonly></textarea>
+        </div>
+
+        <div class="button-row">
+          <button id="clear-button" type="button">Clear</button>
+          <button id="compute-button" type="button" disabled>Compute</button>
+        </div>
+      </form>
+    </main>
+
+    <script src="GCD.js"></script>
+  </body>
+</html>

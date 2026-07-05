@@ -1,0 +1,114 @@
+:root {
+  color-scheme: light;
+  --background: #f7f8f4;
+  --text: #1e2520;
+  --muted: #66716a;
+  --field: #ffffff;
+  --border: #aeb8b0;
+  --focus: #276f86;
+  --button: #244b5a;
+  --button-text: #ffffff;
+  --disabled: #b9bfc0;
+  --disabled-text: #62696b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.page {
+  width: min(100% - 2rem, 74ch);
+  margin: 0 auto;
+  padding: 3rem 0;
+}
+
+h1 {
+  margin: 0 0 1.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.calculator {
+  display: grid;
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+label {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+textarea {
+  width: 100%;
+  min-width: 50ch;
+  min-height: 2.7rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--field);
+  color: var(--text);
+  font: 1rem/1.35 Consolas, "Courier New", monospace;
+  letter-spacing: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  resize: none;
+  white-space: pre;
+}
+
+textarea:focus {
+  border-color: var(--focus);
+  outline: 3px solid rgb(39 111 134 / 18%);
+}
+
+textarea[readonly] {
+  background: #eef2ef;
+}
+
+.button-row {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+button {
+  min-width: 8rem;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: 6px;
+  background: var(--button);
+  color: var(--button-text);
+  cursor: pointer;
+  font: 700 1rem/1 Arial, Helvetica, sans-serif;
+  letter-spacing: 0;
+}
+
+button:hover:not(:disabled),
+button:focus-visible:not(:disabled) {
+  background: #173846;
+}
+
+button:focus-visible {
+  outline: 3px solid rgb(39 111 134 / 28%);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  background: var(--disabled);
+  color: var(--disabled-text);
+  cursor: not-allowed;
+}

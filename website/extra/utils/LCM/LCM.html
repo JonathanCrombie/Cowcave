@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Least Common Multiple</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #1f2933;
+      --muted: #5f6b7a;
+      --border: #c8d0da;
+      --accent: #1769aa;
+      --accent-hover: #125486;
+      --disabled: #d7dce2;
+      --disabled-text: #727d89;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    main {
+      width: min(100% - 32px, 760px);
+      padding: 32px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 14px 36px rgba(31, 41, 51, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 28px;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 4rem minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .number-field {
+      width: 100%;
+      min-width: 50ch;
+      height: 42px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      background: #ffffff;
+      font: 1rem Consolas, "Courier New", monospace;
+      overflow-x: auto;
+      overflow-y: hidden;
+      resize: none;
+      white-space: nowrap;
+    }
+
+    .number-field:focus {
+      outline: 3px solid rgba(23, 105, 170, 0.2);
+      border-color: var(--accent);
+    }
+
+    .number-field[readonly] {
+      background: #f1f4f7;
+    }
+
+    .field-scroll {
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 14px;
+      justify-content: flex-end;
+      margin-top: 36px;
+    }
+
+    button {
+      min-width: 104px;
+      padding: 10px 18px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    #clear {
+      border-color: var(--border);
+      color: var(--text);
+      background: #ffffff;
+    }
+
+    #clear:hover {
+      background: #f1f4f7;
+    }
+
+    #compute {
+      color: #ffffff;
+      background: var(--accent);
+    }
+
+    #compute:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    #compute:disabled {
+      color: var(--disabled-text);
+      background: var(--disabled);
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 680px) {
+      body {
+        place-items: start center;
+      }
+
+      main {
+        margin-top: 24px;
+        padding: 24px;
+      }
+
+      .field-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .actions {
+        justify-content: stretch;
+      }
+
+      button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Least Common Multiple</h1>
+
+    <div class="field-row">
+      <label for="a">A</label>
+      <div class="field-scroll">
+        <textarea id="a" class="number-field" name="a" rows="1" wrap="off" inputmode="numeric" autocomplete="off" spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <label for="b">B</label>
+      <div class="field-scroll">
+        <textarea id="b" class="number-field" name="b" rows="1" wrap="off" inputmode="numeric" autocomplete="off" spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <label for="lcm">LCM</label>
+      <div class="field-scroll">
+        <textarea id="lcm" class="number-field" name="lcm" rows="1" wrap="off" readonly aria-readonly="true" tabindex="-1"></textarea>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="clear" type="button">Clear</button>
+      <button id="compute" type="button" disabled>Compute</button>
+    </div>
+  </main>
+
+  <script>
+    const aInput = document.getElementById("a");
+    const bInput = document.getElementById("b");
+    const lcmOutput = document.getElementById("lcm");
+    const clearButton = document.getElementById("clear");
+    const computeButton = document.getElementById("compute");
+    const integerPattern = /^[+-]?\d+$/;
+
+    function isIntegerText(value) {
+      return integerPattern.test(value.trim());
+    }
+
+    function absBigInt(value) {
+      return value < 0n ? -value : value;
+    }
+
+    function gcdBigInt(a, b) {
+      let x = absBigInt(a);
+      let y = absBigInt(b);
+
+      while (y !== 0n) {
+        const remainder = x % y;
+        x = y;
+        y = remainder;
+      }
+
+      return x;
+    }
+
+    function lcmBigInt(a, b) {
+      const x = absBigInt(a);
+      const y = absBigInt(b);
+
+      if (x === 0n || y === 0n) {
+        return 0n;
+      }
+
+      return (x / gcdBigInt(x, y)) * y;
+    }
+
+    function updateComputeState() {
+      const canCompute = isIntegerText(aInput.value) && isIntegerText(bInput.value);
+      computeButton.disabled = !canCompute;
+
+      if (!canCompute) {
+        lcmOutput.value = "";
+      }
+    }
+
+    function computeLcm() {
+      if (computeButton.disabled) {
+        return;
+      }
+
+      const a = BigInt(aInput.value.trim());
+      const b = BigInt(bInput.value.trim());
+      lcmOutput.value = lcmBigInt(a, b).toString();
+    }
+
+    function clearFields() {
+      aInput.value = "";
+      bInput.value = "";
+      lcmOutput.value = "";
+      updateComputeState();
+      aInput.focus();
+    }
+
+    function keepSingleLine(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+      }
+    }
+
+    aInput.addEventListener("input", updateComputeState);
+    bInput.addEventListener("input", updateComputeState);
+    aInput.addEventListener("keydown", keepSingleLine);
+    bInput.addEventListener("keydown", keepSingleLine);
+    clearButton.addEventListener("click", clearFields);
+    computeButton.addEventListener("click", computeLcm);
+  </script>
+</body>
+</html>

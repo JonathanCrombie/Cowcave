@@ -1,0 +1,137 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f7fb;
+  color: #162033;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.calculator {
+  width: min(760px, calc(100vw - 32px));
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #d8dee9;
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(22, 32, 51, 0.12);
+}
+
+h1 {
+  margin: 0 0 24px;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+form {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 14px 16px;
+  align-items: center;
+}
+
+label {
+  font-weight: 700;
+}
+
+textarea {
+  width: 100%;
+  min-width: min(100%, 50ch);
+  height: 58px;
+  padding: 10px 12px 20px;
+  border: 1px solid #9aa8bb;
+  border-radius: 6px;
+  color: #162033;
+  font: 16px/1.4 Consolas, "Courier New", monospace;
+  overflow-x: auto;
+  overflow-y: hidden;
+  resize: none;
+  white-space: nowrap;
+}
+
+textarea:focus {
+  border-color: #225ea8;
+  outline: 3px solid rgba(34, 94, 168, 0.2);
+}
+
+textarea[readonly] {
+  background: #eef2f7;
+}
+
+.message {
+  grid-column: 2;
+  min-height: 20px;
+  margin: 0;
+  color: #a34000;
+  font-size: 14px;
+}
+
+.actions {
+  grid-column: 2;
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+button {
+  min-width: 112px;
+  padding: 10px 18px;
+  border: 1px solid #6e7f97;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #162033;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+button:hover:not(:disabled),
+button:focus-visible:not(:disabled) {
+  background: #e8eef6;
+}
+
+button:disabled {
+  background: #d3d7de;
+  border-color: #b8bec8;
+  color: #737b88;
+  cursor: not-allowed;
+}
+
+#compute:not(:disabled) {
+  background: #225ea8;
+  border-color: #225ea8;
+  color: #ffffff;
+}
+
+#compute:hover:not(:disabled),
+#compute:focus-visible:not(:disabled) {
+  background: #174778;
+}
+
+@media (max-width: 620px) {
+  .calculator {
+    padding: 24px;
+  }
+
+  form {
+    grid-template-columns: 1fr;
+  }
+
+  .message,
+  .actions {
+    grid-column: 1;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+  }
+
+  button {
+    flex: 1 1 140px;
+  }
+}

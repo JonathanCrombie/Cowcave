@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Binary Exponentiation</title>
+    <link rel="stylesheet" href="BinExp.css" />
+  </head>
+  <body>
+    <main class="calculator" aria-labelledby="page-title">
+      <h1 id="page-title">Binary Exponentiation</h1>
+
+      <form id="modular-form" novalidate>
+        <label for="base">Base</label>
+        <textarea id="base" name="base" rows="1" wrap="off" inputmode="numeric" autocomplete="off"></textarea>
+
+        <label for="exponent">Exponent</label>
+        <textarea id="exponent" name="exponent" rows="1" wrap="off" inputmode="numeric" autocomplete="off"></textarea>
+
+        <label for="modulus">Modulus</label>
+        <textarea id="modulus" name="modulus" rows="1" wrap="off" inputmode="numeric" autocomplete="off"></textarea>
+
+        <label for="result">Result</label>
+        <textarea id="result" name="result" rows="1" wrap="off" readonly aria-live="polite"></textarea>
+
+        <p id="message" class="message" aria-live="polite"></p>
+
+        <div class="actions">
+          <button type="button" id="clear">Clear</button>
+          <button type="submit" id="compute" disabled>Compute</button>
+        </div>
+      </form>
+    </main>
+
+    <script src="BinExp.js"></script>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Miller-Rabin Primality Test</title>
+  <link rel="stylesheet" href="MillerRabin.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="tester" aria-labelledby="page-title">
+      <div class="heading">
+        <p class="eyebrow">Primality test</p>
+        <h1 id="page-title">Miller-Rabin</h1>
+      </div>
+
+      <form id="millerRabinForm" class="controls">
+        <label class="field">
+          <span>Number</span>
+          <span class="number-scroll">
+            <input id="numberInput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false">
+          </span>
+        </label>
+
+        <div class="iteration-row">
+          <label class="field">
+            <span>Iterations</span>
+            <input id="iterationsOutput" type="text" value="10" readonly>
+          </label>
+
+          <label class="slider-field" aria-label="Iterations slider">
+            <input id="iterationsSlider" type="range" min="10" max="50" value="10">
+            <span class="slider-ticks" aria-hidden="true">
+              <span style="--tick-left: 7px;">10</span>
+              <span class="minor" style="--tick-left: calc(12.5% + 5.25px);"></span>
+              <span style="--tick-left: calc(25% + 3.5px);">20</span>
+              <span class="minor" style="--tick-left: calc(37.5% + 1.75px);"></span>
+              <span style="--tick-left: 50%;">30</span>
+              <span class="minor" style="--tick-left: calc(62.5% - 1.75px);"></span>
+              <span style="--tick-left: calc(75% - 3.5px);">40</span>
+              <span class="minor" style="--tick-left: calc(87.5% - 5.25px);"></span>
+              <span style="--tick-left: calc(100% - 7px);">50</span>
+            </span>
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Current Iteration</span>
+          <input id="currentIterationOutput" type="text" value="0" readonly>
+        </label>
+
+        <label class="field">
+          <span>Result</span>
+          <input id="resultOutput" type="text" readonly>
+        </label>
+
+        <div class="actions">
+          <button id="testButton" type="submit" disabled>Test</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script src="MillerRabin.js"></script>
+</body>
+</html>

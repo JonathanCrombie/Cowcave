@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Help Bessie flap through five fixed hay-stack courses in Cownoise Flappy Cow."
+    />
+    <title>Cownoise Flappy Cow</title>
+    <link rel="stylesheet" href="FlappyCow.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="masthead">
+        <div class="brand-mark" aria-hidden="true">🐄</div>
+        <div>
+          <p class="kicker">A barnyard flying adventure</p>
+          <h1>Cownoise <span>Flappy Cow</span></h1>
+        </div>
+        <div class="bessie-badge">
+          <span>Starring</span>
+          <strong>Bessie</strong>
+        </div>
+      </header>
+
+      <section class="game-card" aria-label="Cownoise Flappy Cow game">
+        <div
+          id="gameStage"
+          class="game-stage"
+          role="application"
+          aria-label="Game area. Press Space or Arrow Up to flap."
+          tabindex="0"
+        >
+          <div class="sun-glow" aria-hidden="true"></div>
+          <div class="cloud cloud-one" aria-hidden="true"></div>
+          <div class="cloud cloud-two" aria-hidden="true"></div>
+
+          <div class="game-hud">
+            <div class="hud-chip">
+              <span>Level</span>
+              <strong id="hudLevel">1</strong>
+            </div>
+            <div class="hud-progress" aria-label="Obstacle progress">
+              <div class="hud-progress-label">
+                <span>Haystacks cleared</span>
+                <strong id="hudScore">0 / 5</strong>
+              </div>
+              <div class="progress-track" aria-hidden="true">
+                <div id="progressFill" class="progress-fill"></div>
+              </div>
+            </div>
+            <button
+              id="pauseButton"
+              class="icon-button"
+              type="button"
+              aria-label="Pause game"
+              title="Pause (P)"
+            >
+              <span aria-hidden="true">Ⅱ</span>
+            </button>
+          </div>
+
+          <div id="obstacleLayer" class="obstacle-layer" aria-hidden="true"></div>
+          <div id="particleLayer" class="particle-layer" aria-hidden="true"></div>
+
+          <img
+            id="bessie"
+            class="bessie"
+            src="assets/flappy-cow.png"
+            alt="Bessie, a black and white cow with wings"
+            draggable="false"
+          />
+
+          <div class="finish-line" id="finishLine" aria-hidden="true">
+            <span>FINISH</span>
+          </div>
+
+          <div class="ground" aria-hidden="true">
+            <div class="ground-fence"></div>
+            <div class="ground-grass"></div>
+          </div>
+
+          <div id="gameOverlay" class="game-overlay">
+            <div class="overlay-card">
+              <p id="overlayEyebrow" class="overlay-eyebrow">Level 1 · Sunny Stroll</p>
+              <h2 id="overlayTitle">Ready to flap?</h2>
+              <p id="overlayCopy">
+                Guide Bessie through 5 haystack gaps. This first pasture is nice and roomy.
+              </p>
+              <div id="controlHints" class="control-hints" aria-label="Game controls">
+                <span><kbd>Space</kbd> or <kbd>↑</kbd> to flap</span>
+                <span class="hint-divider">•</span>
+                <span>Tap anywhere</span>
+              </div>
+              <button id="startButton" class="primary-button" type="button">
+                <span>Play Level 1</span>
+                <span aria-hidden="true">→</span>
+              </button>
+              <button id="secondaryButton" class="secondary-button is-hidden" type="button">
+                Choose a level
+              </button>
+            </div>
+          </div>
+
+          <div id="toast" class="toast" role="status" aria-live="polite"></div>
+          <p id="gameStatus" class="sr-only" aria-live="assertive"></p>
+        </div>
+
+        <div class="below-stage">
+          <div>
+            <p class="section-kicker">Bessie’s flight map</p>
+            <h2>Choose a pasture</h2>
+          </div>
+          <div class="legend">
+            <span><i class="legend-dot open"></i>Ready to fly</span>
+            <span><i class="legend-dot locked"></i>Locked</span>
+          </div>
+        </div>
+
+        <div id="levelGrid" class="level-grid" aria-label="Level selection"></div>
+
+        <div class="game-footer">
+          <p>
+            Each course is hand-built and stays exactly the same every run—learn the route,
+            then master it.
+          </p>
+          <button id="resetProgressButton" class="text-button" type="button">
+            Reset progress
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script src="FlappyCow.js"></script>
+  </body>
+</html>

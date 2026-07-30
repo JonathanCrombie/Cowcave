@@ -4,7 +4,7 @@ A local, dependency-free browser game starring Bessie the flying cow.
 
 ## Run it
 
-Open `index.html` directly in a modern browser. No install or build step is required.
+Open `FlappyCow.html` directly in a modern browser. No install or build step is required.
 
 For the most consistent local browser behavior, you can also serve this folder with any
 simple static file server.

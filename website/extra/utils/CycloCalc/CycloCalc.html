@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calculator for Homogeneous Cyclotomic Polynomials">
+  <title>Cyclotomic Calculator for A^N +/- B^N</title>
+  <link rel="stylesheet" href="CycloCalc.css">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+      options: { skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="CycloCalcCore.js"></script>
+  <script defer src="CycloCalcApp.js"></script>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <p class="eyebrow">Homogeneous cyclotomic polynomials</p>
+      <h1>Cyclotomic Calculator <span class="title-join">for</span></h1>
+      <div class="hero-formula" aria-label="A to the N plus or minus B to the N">
+        <span>A</span><sup>N</sup><span class="hero-sign">±</span><span>B</span><sup>N</sup>
+      </div>
+      <p class="intro">See the standard decomposition, then expose any verified shift, perfect-power, cubic, or composition relationship hiding inside it.</p>
+    </header>
+
+    <section class="calculator-card" aria-labelledby="calculator-heading">
+      <div class="section-heading">
+        <span class="step-number">01</span>
+        <div>
+          <h2 id="calculator-heading">Choose the expression</h2>
+          <p>Positive integers only.</p>
+        </div>
+      </div>
+
+      <form id="calculator-form" novalidate>
+        <div class="expression-builder">
+          <label class="number-field">
+            <span>A</span>
+            <input id="input-a" name="a" type="text" inputmode="numeric" autocomplete="off" aria-describedby="input-note">
+          </label>
+          <label class="number-field compact-field exponent-field">
+            <span class="sr-only">N</span>
+            <input id="input-n" name="n" type="text" inputmode="numeric" autocomplete="off" aria-label="N" aria-describedby="input-note">
+          </label>
+
+          <button id="sign-toggle" class="sign-toggle" type="button" aria-label="Change sign; current sign is plus" aria-pressed="true">
+            <canvas id="sign-canvas" aria-hidden="true"></canvas>
+            <span class="sr-only">Toggle plus or minus</span>
+          </button>
+
+          <label class="number-field">
+            <span>B</span>
+            <input id="input-b" name="b" type="text" inputmode="numeric" autocomplete="off" value="1" aria-describedby="input-note">
+          </label>
+          <div class="number-field compact-field exponent-field mirrored-exponent" aria-hidden="true">
+            <output id="mirrored-n" for="input-n"></output>
+          </div>
+        </div>
+
+        <label class="normalization-option">
+          <input id="normalize-perfect-powers" type="checkbox" checked>
+          <span>Normalize perfect powers</span>
+        </label>
+
+        <p id="input-note" class="input-note">
+          <span>Required input: A ≥ 2, B ≥ 1, N ≥ 1. Very large exponents may require substantial time and memory.</span>
+          <span class="assumption-note">Assumptions: A &gt; B &gt; 0 and gcd(A, B) = 1.</span>
+        </p>
+        <div class="action-row">
+          <button id="calculate-button" class="primary-button" type="submit" disabled>Calculate</button>
+          <button id="clear-button" class="secondary-button" type="button">Clear</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="results" class="results" aria-live="polite" aria-label="Calculation results" hidden></section>
+
+  </main>
+</body>
+</html>

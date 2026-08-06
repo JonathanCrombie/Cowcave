@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calculate exact Aurifeuillean L, M and primitive L, M factors for A^N plus or minus B^N.">
+  <title>Aurifeuillean Calculator for A^N +/- B^N</title>
+  <link rel="stylesheet" href="AuriCalc.css">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']] },
+      svg: { fontCache: 'global' },
+      options: { enableMenu: false }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="AuriCalcMath.js"></script>
+  <script defer src="AuriCalcApp.js"></script>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <p class="eyebrow">Brent's Algorithm L ( for Lucas )</p>
+      <h1>
+        <span>Aurifeuillean Calculator</span>
+        <span class="title-expression" aria-label="for A to the N plus or minus B to the N">
+          <small>for</small>
+          <span class="power">A<sup>N</sup></span>
+          <span class="title-sign">±</span>
+          <span class="power">B<sup>N</sup></span>
+        </span>
+      </h1>
+      <p class="lede">Find the exact Aurifeuillean factors and their primitive cyclotomic parts, with every algebraic step shown.</p>
+    </header>
+
+    <section class="calculator-card" aria-labelledby="calculator-heading">
+      <h2 id="calculator-heading" class="sr-only">Calculator inputs</h2>
+      <form id="calculatorForm" novalidate>
+        <div class="input-row">
+          <label class="field">
+            <span>A</span>
+            <input id="inputA" name="a" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="2 or greater" aria-describedby="inputRules">
+          </label>
+
+          <div class="sign-control">
+            <span class="sign-label">Sign</span>
+            <canvas id="signToggle" width="100" height="68" tabindex="0" role="button" aria-label="Plus selected. Click to change to minus." aria-pressed="false"></canvas>
+          </div>
+
+          <label class="field">
+            <span>B</span>
+            <input id="inputB" name="b" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="1" aria-describedby="inputRules">
+          </label>
+
+          <label class="field exponent-field">
+            <span>N</span>
+            <input id="inputN" name="n" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="2 or greater" aria-describedby="inputRules">
+          </label>
+        </div>
+
+        <p id="inputRules" class="input-rules">Whole numbers only: A ≥ 2, B ≥ 1, N ≥ 2.</p>
+
+        <div class="button-row">
+          <button id="calculateButton" class="primary-button" type="submit" disabled>Calculate</button>
+          <button id="clearButton" class="secondary-button" type="button">Clear</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="status" class="status" aria-live="polite"></section>
+    <section id="results" class="results" aria-live="polite"></section>
+
+  </main>
+</body>
+</html>

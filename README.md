@@ -18,7 +18,7 @@ website folder
 
 Mostly source files for <a href="http://www.cownoise.com" target="_blank">Cownoise</a>
 
-Direct link to web-served javascript apps: <a href="http://www.cownoise.com/extra.html" target="_blank">Extra</a>
+Direct link to web-served javascript apps: <a href="http://myfactorcollection.cownoise.com:8090/extra.html" target="_blank">Extra</a>
 
 Or, just copy the html, css, js files under <a href="https://github.com/JonathanCrombie/Cowcave/tree/main/website/extra">extra</a> to your hard drive and run them for free forever.
 

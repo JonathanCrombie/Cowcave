@@ -18,6 +18,125 @@ const operatorLabels = {
   "**": "^",
 };
 
+const keyButtons = [...document.querySelectorAll(".key")];
+
+function roundedRectangle(context, x, y, width, height, radius) {
+  const safeRadius = Math.min(radius, width / 2, height / 2);
+  context.beginPath();
+  context.roundRect(x, y, width, height, safeRadius);
+}
+
+function drawKey(button) {
+  const canvas = button.querySelector(".key-surface");
+  const width = button.clientWidth;
+  const height = button.clientHeight;
+
+  if (!canvas || width === 0 || height === 0) {
+    return;
+  }
+
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.round(width * pixelRatio);
+  canvas.height = Math.round(height * pixelRatio);
+
+  const context = canvas.getContext("2d");
+  context.scale(pixelRatio, pixelRatio);
+  context.clearRect(0, 0, width, height);
+
+  const styles = getComputedStyle(button);
+  const pressed = button.classList.contains("is-pressed");
+  const hovered = button.matches(":hover") && !pressed;
+  const faceTop = styles.getPropertyValue("--face-top").trim();
+  const faceBottom = styles.getPropertyValue("--face-bottom").trim();
+  const edge = styles.getPropertyValue("--key-edge").trim();
+  const outline = styles.getPropertyValue("--key-outline").trim();
+  const shine = styles.getPropertyValue("--key-shine").trim();
+  const sideInset = 3;
+  const top = pressed ? 8 : hovered ? 2 : 3;
+  const faceHeight = height - 14;
+  const edgeTop = pressed ? 9 : 8;
+
+  context.save();
+  context.shadowColor = pressed
+    ? "rgba(20, 30, 40, 0.16)"
+    : "rgba(20, 30, 40, 0.3)";
+  context.shadowBlur = pressed ? 2 : 5;
+  context.shadowOffsetY = pressed ? 1 : 4;
+  roundedRectangle(
+    context,
+    sideInset,
+    edgeTop,
+    width - sideInset * 2,
+    height - edgeTop - 2,
+    10,
+  );
+  context.fillStyle = edge;
+  context.fill();
+  context.restore();
+
+  const gradient = context.createLinearGradient(0, top, 0, top + faceHeight);
+  gradient.addColorStop(0, hovered ? shine : faceTop);
+  gradient.addColorStop(0.16, faceTop);
+  gradient.addColorStop(1, faceBottom);
+
+  roundedRectangle(context, sideInset, top, width - sideInset * 2, faceHeight, 10);
+  context.fillStyle = gradient;
+  context.fill();
+  context.strokeStyle = outline;
+  context.lineWidth = 1;
+  context.stroke();
+
+  context.save();
+  roundedRectangle(
+    context,
+    sideInset + 1.5,
+    top + 1.5,
+    width - sideInset * 2 - 3,
+    faceHeight - 3,
+    8.5,
+  );
+  context.clip();
+  const highlight = context.createLinearGradient(0, top, 0, top + 12);
+  highlight.addColorStop(0, shine);
+  highlight.addColorStop(1, "rgba(255, 255, 255, 0)");
+  context.fillStyle = highlight;
+  context.fillRect(sideInset, top, width - sideInset * 2, 13);
+  context.restore();
+
+  context.beginPath();
+  context.moveTo(sideInset + 10, top + faceHeight - 1.5);
+  context.lineTo(width - sideInset - 10, top + faceHeight - 1.5);
+  context.strokeStyle = "rgba(20, 30, 40, 0.14)";
+  context.stroke();
+}
+
+function setKeyPressed(button, pressed) {
+  if (!button || button.disabled) {
+    return;
+  }
+
+  button.classList.toggle("is-pressed", pressed);
+  drawKey(button);
+}
+
+function pulseKey(button) {
+  setKeyPressed(button, true);
+  window.setTimeout(() => setKeyPressed(button, false), 90);
+}
+
+const keyResizeObserver = new ResizeObserver((entries) => {
+  entries.forEach(({ target }) => drawKey(target));
+});
+
+keyButtons.forEach((button) => {
+  keyResizeObserver.observe(button);
+  button.addEventListener("pointerenter", () => drawKey(button));
+  button.addEventListener("pointerleave", () => setKeyPressed(button, false));
+  button.addEventListener("pointerdown", () => setKeyPressed(button, true));
+  button.addEventListener("pointerup", () => setKeyPressed(button, false));
+  button.addEventListener("pointercancel", () => setKeyPressed(button, false));
+});
+
 function formatBigInt(value) {
   return value.toLocaleString("en-US");
 }
@@ -287,6 +406,17 @@ keysEl.addEventListener("click", (event) => {
 
 window.addEventListener("keydown", (event) => {
   const key = event.key;
+  let visualKey = keyButtons.find((button) => button.dataset.value === key);
+
+  if (key === "Enter" || key === "=") {
+    visualKey = keysEl.querySelector('[data-action="calculate"]');
+  } else if (key === "Backspace") {
+    visualKey = keysEl.querySelector('[data-action="delete"]');
+  } else if (key === "Escape") {
+    visualKey = keysEl.querySelector('[data-action="clear"]');
+  } else if (key === "^") {
+    visualKey = keysEl.querySelector('[data-value="**"]');
+  }
 
   if (/^\d$/.test(key)) {
     appendDigit(key);
@@ -301,6 +431,10 @@ window.addEventListener("keydown", (event) => {
     deleteDigit();
   } else if (key === "Escape") {
     clearCalculator();
+  }
+
+  if (visualKey) {
+    pulseKey(visualKey);
   }
 });
 

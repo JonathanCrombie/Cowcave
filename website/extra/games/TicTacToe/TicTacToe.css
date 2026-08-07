@@ -31,6 +31,34 @@ button {
   font: inherit;
 }
 
+button[data-canvas-button] {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button-canvas {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.button-label {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  transform: translateY(-3px);
+  transition: transform 90ms ease;
+}
+
 .game {
   min-height: 100vh;
   display: grid;
@@ -71,12 +99,10 @@ h1 {
 
 .reset-button,
 .new-round-button {
-  border: 0;
-  border-radius: 8px;
   color: #ffffff;
-  background: var(--accent);
   cursor: pointer;
-  transition: transform 160ms ease, background 160ms ease;
+  text-shadow: 0 1px 1px rgba(4, 47, 46, 0.55);
+  transition: filter 150ms ease, transform 90ms ease;
 }
 
 .reset-button {
@@ -94,8 +120,23 @@ h1 {
 
 .reset-button:hover,
 .new-round-button:hover {
-  background: var(--accent-dark);
-  transform: translateY(-1px);
+  filter: brightness(1.06) saturate(1.04);
+  transform: translateY(-2px);
+}
+
+.reset-button:active,
+.new-round-button:active,
+.cell:active:not(:disabled) {
+  transform: translateY(4px);
+}
+
+button:active .button-label {
+  transform: translateY(0);
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.42);
+  outline-offset: 4px;
 }
 
 .scoreboard {
@@ -105,13 +146,27 @@ h1 {
   margin: 24px 0 18px;
 }
 
-.scoreboard div {
+.score-card {
+  position: relative;
+  isolation: isolate;
   min-width: 0;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  min-height: 84px;
+  padding: 13px 8px 20px;
   text-align: center;
-  background: #fbfcff;
+}
+
+.score-card-canvas {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.score-card-content {
+  position: relative;
+  transform: translateY(-2px);
 }
 
 .score-label {
@@ -124,6 +179,20 @@ h1 {
   display: block;
   margin-top: 4px;
   font-size: 1.65rem;
+  line-height: 1;
+  text-shadow: 0 2px 0 #ffffff, 0 4px 7px rgba(30, 41, 59, 0.18);
+}
+
+.score-card-x strong {
+  color: var(--x-color);
+}
+
+.score-card-draw strong {
+  color: var(--accent);
+}
+
+.score-card-o strong {
+  color: var(--o-color);
 }
 
 .status {
@@ -147,21 +216,18 @@ h1 {
   place-items: center;
   width: 100%;
   aspect-ratio: 1;
-  border: 2px solid var(--line);
-  border-radius: 8px;
   color: var(--ink);
-  background: #f8fafc;
   cursor: pointer;
   font-size: clamp(2.4rem, 16vw, 5.25rem);
   font-weight: 900;
   line-height: 1;
-  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+  text-shadow: 0 3px 0 rgba(255, 255, 255, 0.72), 0 5px 8px rgba(15, 23, 42, 0.16);
+  transition: filter 150ms ease, transform 90ms ease;
 }
 
 .cell:hover:not(:disabled) {
-  border-color: var(--accent);
-  background: #eefdfa;
-  transform: translateY(-1px);
+  filter: brightness(1.025) saturate(1.08);
+  transform: translateY(-2px);
 }
 
 .cell:disabled {
@@ -177,8 +243,29 @@ h1 {
 }
 
 .cell.winning {
-  border-color: var(--accent);
-  background: #dff7f1;
+  animation: winner-pulse 900ms ease-in-out infinite alternate;
+}
+
+@keyframes winner-pulse {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.09) saturate(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reset-button,
+  .new-round-button,
+  .cell,
+  .button-label {
+    transition: none;
+  }
+
+  .cell.winning {
+    animation: none;
+  }
 }
 
 @media (max-width: 520px) {
@@ -203,7 +290,7 @@ h1 {
     gap: 8px;
   }
 
-  .scoreboard div {
-    padding: 10px 6px;
+  .score-card {
+    padding: 10px 6px 18px;
   }
 }

@@ -1,0 +1,414 @@
+MPQS / SIQS in plain JavaScript
+==============================
+
+Open MPQS.html in a current browser (Chrome, Edge, Firefox or Safari with
+BigInt, Web Workers and Web Crypto support). No build, package installation,
+network service, or external library is required. All computation is local.
+The scripts and stylesheet must remain alongside MPQS.html.
+
+Enter a positive whole decimal number of at most 110 digits and click
+Factorize, or press Enter. Surrounding whitespace and leading zeros are
+accepted; internal whitespace, signs, separators and scientific notation are
+not. Leading zeros count toward the input limit. Overlength input is rejected,
+never silently truncated. Factorize is disabled until the syntax is valid.
+
+Threads defaults to 1. Choose a whole number from 1 through 32 before starting.
+The value is the total number of computation workers, including the worker
+that coordinates the search. It is locked during a calculation. Invalid or
+empty thread counts disable Factorize. Clear preserves the Threads value.
+Threads controls parallel SQUFOF multipliers, Brent-Rho attempts, ECM curves, sieving and the sparse matrix
+products during block Lanczos. More threads can help larger composites; worker startup,
+communication, and CPU/cache contention mean that more threads are not always
+faster.
+
+ECM Pretesting is checked by default. Uncheck it to skip the ECM prepass.
+It is locked during a calculation, and Clear preserves its setting along
+with Threads. Enabled ECM runs after Brent-Rho and before MPQS/SIQS, only
+for remaining composite cofactors above 45 digits.
+
+Factoring starts with trial division by every prime up to 1000, removing all
+copies of each small factor. Only the remaining cofactor needs primality
+testing and, if composite, perfect-power detection. Remaining composites
+with at most 24 actual decimal digits are fully factored using SQUFOF,
+recursively splitting each divisor until all factors pass primality testing.
+The size check is repeated after each split; leading zeroes do not count.
+Cofactors of 25 digits or more skip this SQUFOF path and use the existing
+Brent-Rho/ECM/MPQS pipeline. Inputs completely
+factored by trial division finish without Miller-Rabin or MPQS. Prime inputs
+are still reported as such, with no factor list.
+
+When trial division finds factors and leaves a cofactor, those factors appear
+in Factors immediately, before work on the cofactor begins. The help text
+marks them as a partial result while the remaining cofactor is unresolved.
+Verified factors recovered by SQUFOF, Brent-Rho or ECM also appear as partial results while
+the remaining cofactor is unresolved. Raw composite divisors are recursively
+factored before appearing in this field.
+When factoring finishes, the complete sorted list replaces the partial list.
+Clear or editing the input removes the partial result and its label.
+
+Factors is read-only. Repeated factors are displayed as powers; for example,
+360 becomes 2^3 x 3^2 x 5 (the page uses a multiplication symbol).
+Clear empties Composite and Factors and the status counters, preserves Threads and ECM Pretesting,
+and immediately terminates every worker in the calculation.
+Composite and Factors have horizontal scrolling for long values. On
+small screens their containers also scroll, preserving a 50-character field.
+
+The bottom status area uses an msieve-style relation line:
+  2,903 relations (2,537 full + 366 combined from 97,740 partial), need 57,104
+
+Before sieving, the Brent-Rho status shows the cofactor size, thread count,
+total attempts and polynomial evaluations, and percentage of the shared
+active-worker time allowance consumed.
+The relation counters are zero during this stage; the relation bar continues
+to describe sieving only.
+For small cofactors, the SQUFOF status instead shows cofactor size, thread
+count, multipliers tried and total form iterations across the worker pool.
+There is no estimated percentage for this search.
+During ECM, status shows preparation/stage 1/stage 2, the cofactor size,
+thread count, completed curves versus the shared planned count, achieved
+versus target t-depth, and the current B1/B2 bounds. A curve that finds a
+factor early is not credited as a fully completed curve. Relation counts
+stay zero during ECM; the relation progress bar remains specific to sieving.
+
+These example values illustrate the format; actual counters update live:
+  relations: all usable relations in the current matrix (full + combined).
+  full: directly smooth relations, without a remaining large factor.
+  combined: relations formed by matching partials or closing cycles in the
+    double-large-prime graph, including relations from different workers.
+  partial: all partials collected in this cofactor search, including those
+    already combined or evicted from the cache, not just unmatched partials.
+  need: estimated factor-base columns (including sign), plus 16
+    for compact MPQS, a margin of 5% (at least 16) for smaller SIQS searches,
+    or 96 extra relations for large SIQS searches.
+    This is a heuristic target, not an exact remaining count or percentage.
+    Factoring can finish sooner or require more relations.
+  Relation collection bar: full + combined divided by the estimated target,
+    capped at 100%, with a percentage alongside it. An empty bar and a dash
+    mean that no estimate is available yet. Reaching 100% does not guarantee
+    that factoring is finished, and an early result can leave it below 100%.
+
+For large searches the status then shows Filtering matrix, Block Lanczos,
+and Extracting factors. During matrix work it displays the matrix dimensions
+instead of the sieve's polynomial/thread counts. Lanczos also reports its
+iteration, dimensions processed, and the number of participating threads.
+The relation bar still describes relation
+collection, not linear-algebra progress. If dependencies are insufficient or
+produce only trivial GCDs, sieving resumes with a larger relation target.
+
+The counters describe the current cofactor search, not a cumulative total
+across recursive factoring. They are zero when small-factor removal, SQUFOF, Brent-Rho, ECM
+or perfect powers finish the job without MPQS. A fresh cofactor resets all counters.
+Recycling a matrix resets usable/full/combined counts; the total partial count
+continues for that cofactor. Final counts remain visible until editing or Clear.
+The monospace relation line scrolls horizontally when it does not fit.
+With multiple threads, counts and progress cover the shared relation collector,
+not separate per-worker targets. The status message shows the active thread
+count during sieving (small cofactors use one worker).
+
+Algorithm
+---------
+The implementation uses msieve-1.36/common/smallfact/tinyqs.c and the full
+SIQS code in msieve-1.36/mpqs/ as guides. Those sources were placed in the
+public domain by Jason Papadopoulos. The large-input improvements also use
+the local msieve/mpqs/ and msieve/common/smallfact/squfof.c as guides.
+It uses:
+  - trial division through 1000 before primality testing;
+  - 30-round Miller-Rabin with early composite exit and unbiased, cryptographic
+    rejection-sampled random bases from 2 through n-2;
+  - perfect-power detection for remaining composite cofactors;
+  - BigInt SQUFOF for composite cofactors with at most 24 digits;
+  - bounded Brent-Rho attempts for composite cofactors with at least 40 digits;
+  - optional two-stage ECM with YAFU's normal pretesting target above 45 digits;
+  - a quadratic-residue factor base and Tonelli-Shanks modular square roots;
+  - multiple polynomials Q(x) = A*x^2 + 2*B*x + C, with B^2=k*n mod A;
+  - a Knuth-Schroeppel-style multiplier score for larger inputs;
+  - a logarithmic sieve including prime powers, followed by exact division;
+  - single-large-prime matching and, from 282 bits, double-large-prime cycles;
+  - bounded SQUFOF splitting of small residuals, with exact split checks;
+  - singleton deletion, weight-two merging and heavy-column pruning;
+  - 32-way block Lanczos for large matrices, packed Gaussian elimination for
+    smaller searches, all over GF(2);
+  - square congruences and GCD(X +/- Y, n), rejecting trivial dependencies;
+  - recursive factoring, sorted output, and an exact final product check.
+
+The small-composite SQUFOF path follows
+msieve-1.36/common/smallfact/squfof.c. It races the original sixteen square-free
+multipliers, saves small denominators to reject improper square forms, and
+traverses the inverse square-root form to recover a divisor. Every divisor is
+checked by exact GCD/division against the original cofactor.
+
+All scaled numbers, forms, square roots and GCDs use BigInt integer arithmetic.
+Inputs up to 24 digits can exceed JavaScript Number's exact range, and multipliers
+can enlarge them further. Number is used only for counters, indexing and
+elapsed time. No floating-point square roots or divisions choose factors.
+
+This is the complete factoring path for eligible small composites, without a
+1% time allowance or a fallback to MPQS. Failed multipliers are replaced by
+new square-free multipliers formed from the original set and additional odd
+primes. Forward periods without a proper square and overflowing saved-form
+queues are retired. Each worker receives distinct multipliers and races its
+assigned forms in blocks of 300 even/odd pairs. Short resumable batches keep
+the worker protocol responsive. Finding a proper divisor stops new batches;
+existing batches finish before the helpers are released for the next cofactor.
+Clear terminates all workers immediately and preserves the Threads value.
+As with other factoring methods, completion time varies with the number.
+
+The existing bounded Number SQUFOF routine used to split double-large-prime
+sieve residuals remains separate. Its inputs are below 2^52 (at most 16
+decimal digits), so it also stays within the 24-digit limit.
+
+Brent-Rho follows BrentRho/BrentRho.c: the walk x <- (x*x+c) mod n doubles
+its cycle length, batches up to 128 differences per GCD, and replays a batch
+one step at a time when its GCD is n. Failed or exhausted walks restart with
+new seeds/constants (2,1), (3,2), ... for at most max(8, Threads) attempts
+across the entire pool. Each seed/constant pair belongs to just one worker.
+A divisor must be strictly between 1 and n and divide n exactly.
+
+Only composite cofactors of 40 or more actual decimal digits enter Rho.
+Leading zeroes do not count, and the threshold applies after trial division
+and at every recursive split. Probable primes and perfect powers are handled
+first. Composites of 25 through 39 digits go directly to MPQS/SIQS; smaller
+ones use SQUFOF.
+
+The Rho allowance targets 1% of estimated remaining factoring time. It uses a
+rough size model based on the existing local timing records, not a new
+benchmark or a guarantee of actual factoring time. The model interpolates
+logarithmically between about 4 seconds at 52 digits on one worker and a
+6,700 worker-second proxy at 86 digits (the historical 838-second, eight-worker
+run). With d digits and t selected Threads:
+
+  estimated milliseconds = 4000 * exp(log(6700/4) * (d - 52) / 34) / t
+  Rho milliseconds       = min(30000, 0.01 * estimated milliseconds)
+
+Examples of the initial total Rho allowance (shared, not per worker):
+  Digits       1 thread       8 threads
+     40          2.9 ms           0.36 ms
+     50         25.8 ms           3.23 ms
+     60        229.4 ms          28.68 ms
+     70          2.04 s           0.25 s
+     80         18.08 s           2.26 s
+     86         30.00 s           8.38 s
+    110         30.00 s          30.00 s
+
+Actual costs vary with the factors, hardware and worker scaling; the model
+predates the latest matrix improvements. Rho can finish early, so its actual
+share can be much smaller than 1%. The existing size model supplies one total
+allowance, divided equally among the selected workers. Time spent actively
+advancing each walk is added across workers; waiting for messages or other
+workers does not consume it. Elapsed wall time is recorded separately.
+The initial allowance is also shared across all recursive Rho searches, each
+additionally limited by its own cofactor's estimate. A total cap of 20 million
+polynomial evaluations is partitioned across workers in the same way.
+Increasing Threads never grants each worker the full allowance.
+
+Walks preserve their state between short batches, yielding after about 4 ms
+or 64 checkpoints. Time is checked at most every 128 evaluations and on every
+replay step; one short batch/GCD or OS scheduling can overrun a worker's
+deadline. These small overruns are included in the consumed allowance.
+When any worker finds a divisor, no further batches are scheduled. Already
+running batches finish, then helpers release their Rho state and can be
+reused for a recursive cofactor, sieving or block Lanczos. Replies carry
+job/request identifiers so late messages cannot contaminate another search.
+Exhausting the allowance never means prime or failure: factoring continues
+with MPQS/SIQS. Clear still terminates the entire worker pool.
+
+ECM pretesting
+--------------
+The ECM prepass follows the normal size-based scheduling strategy in the
+local yafu/factor/autofactor.c, with Suyama curves as in
+yafu/factor/avx-ecm/avxecm.c. Those sources are public domain.
+For d remaining decimal digits, the target is t(4*d/13). Up to 45 digits,
+the normal plan skips ECM. Prime/probable-prime inputs and perfect powers
+take their existing paths first. This adds ECM to the browser's pipeline;
+it does not add YAFU's Fermat, p-1, p+1, SNFS or NFS stages.
+
+ECM uses exact BigInt Montgomery x:z point arithmetic, Suyama curve
+parameterization, and multiplication by the largest power of each prime
+through B1. Stage 2 uses baby/giant steps and prime pairing q=kD +/- r,
+with B2=100*B1. Projective cross-products are accumulated for batched GCDs;
+if a batch GCD equals the input, its individual terms are checked to recover
+factors hidden by batching. All returned divisors are checked by exact
+division. Composite divisors are recursively factored before being shown.
+
+The bound ladder for this page's <=110-digit inputs is:
+  Target level       B1             B2
+       t15           2,000          200,000
+       t20          11,000        1,100,000
+       t25          50,000        5,000,000
+       t30         250,000       25,000,000
+       t35       1,000,000      100,000,000
+
+Scheduling uses YAFU's avx_ecm_data table, which estimates Suyama curves with
+power-1 stage 2 and B2=100*B1, matching this implementation's bounds.
+Each level's diagonal curve estimate supplies its maximum batch, with the
+last batch reduced to reach the target after crediting earlier levels.
+These counts differ from GMP-ECM's default-B2 schedule. They are heuristic
+factor-search depths, not proofs that smaller factors are absent, runtime
+predictions, or guarantees of matching native YAFU's performance.
+
+For an unchanged 86-digit composite the initial plan is 564 curves:
+32 at B1=2000, 98 at 11000, 281 at 50000 and 153 at 250000, targeting t26.46.
+The same total applies to every Threads setting. Workers get disjoint curve
+indices from a random starting sigma. Completed curves are credited to
+descendant cofactors, whose smaller digit counts can require less work.
+When the plan is exhausted without a factor, MPQS/SIQS resumes normally.
+
+The coordinator also computes curves, so Threads is the total computation
+worker count. Jobs preserve state across roughly 4-ms/128-step batches.
+One batch per helper is in flight; finding a factor stops new waves and
+drains the current wave before helpers are released. Job/request IDs isolate
+late messages. Clear terminates the entire pool immediately.
+
+Stage-2 primes are generated with a segmented sieve and stored as compact
+prime-pair masks. Each worker caches only the most recent bound's table,
+not every individual prime through B2. No native code, WebAssembly, SharedArrayBuffer,
+cross-origin isolation, or external factoring service is used.
+
+The programmatic factor(value, progress, options), factorParallel(value,
+progress, ports, options), and startFactorization(value, threads, callback,
+options) APIs accept { ecmPretesting: true }. Omission preserves their
+previous behavior; the page explicitly passes the checkbox value.
+
+Remaining composites of 25 digits use the compact prime-square MPQS path
+(A=q^2). Larger composites use self-initializing MPQS (SIQS): A is a product
+of distinct factor-base primes near sqrt(2*k*n)/halfInterval. CRT components
+generate up to 2048 related B values per A. Gray-code updates reuse modular
+inverses and update sieve roots with bounded additions/subtractions.
+
+Parallel SIQS assigns different A families to workers from one central
+selector. Each worker reuses its own sieve buffers and roots. Raw full and
+partial relations are sent directly to the coordinator through MessagePorts;
+the coordinator combines partials across all workers and performs the
+linear algebra. The coordinator also sieves in bounded batches, yielding
+between batches to process helper results. Helpers wait for acknowledgement
+before producing the next batch, bounding the amount of queued data.
+Search identifiers discard any late results from a previous cofactor.
+During batch matrix solving, sieving pauses and the same helpers perform
+Lanczos matrix products. Each helper has at most one unacknowledged sieve
+batch; these batches are processed if sieving resumes. Matrix replies use a
+separate request path so paused sieve work cannot block the solver. Helpers
+release their matrix slices before resuming their existing sieve jobs.
+
+The page owns the entire worker pool. Completion, Clear, page exit, or an
+error terminates all workers. No SharedArrayBuffer, cross-origin isolation,
+WebAssembly, external library, or server-side computation is needed.
+Trial division, primality testing, perfect-power detection, and the compact
+MPQS path (cofactors of 25 digits) run on the coordinator only.
+
+The SIQS factor-base size is interpolated from Msieve's bit-length parameter
+table. Below 240 bits the cap is 12,000 primes; larger inputs can use up to
+100,000. The 86-digit benchmark uses 55,333 primes. Half-intervals are 16,384,
+32,768, 65,536 or 262,144, depending on size. The single-large-prime cutoff L
+is 40 or 80 times the largest factor-base prime. At 282 bits and above,
+residuals up to L * floor(L^0.8), capped below 2^52, can be split into two
+bounded factors. A base-2 Fermat filter rejects likely prime residuals above
+L before SQUFOF. This filter cannot accept an invalid relation: every split
+is checked by exact BigInt division. An unsuccessful split is discarded.
+
+Double-large-prime relations are edges in a shared spanning forest. An edge
+closing a cycle produces a usable relation whose large factors occur an even
+number of times. Tree edges remain available to subsequent independent
+cycles, so combined relations can share partials. A deduplication set rejects
+repeated polynomial relations. Packed exponent arrays reduce storage and
+worker-message size. The former 50,000-entry cache limit does not apply to
+this graph.
+
+SIQS uses eighth-bit logarithmic weights in a reusable Uint16Array. Small
+prime powers have precomputed modular roots. The densest updates (powers of
+2 through 32, powers of 3 through 9, and 5) form a 1440-entry repeating pattern,
+expanded with typed-array copies. The remaining sieve loops are unrolled.
+A conservative coarse cutoff skips most logarithm calls; exact polynomial
+evaluation and trial division still validate every accepted relation. Large
+searches use flat typed arrays for roots, weights and Gray-code shifts.
+Candidate factoring checks small-prime residues directly and re-sieves
+large-prime hits, avoiding a complete factor-base scan for every candidate.
+
+Small SIQS searches use online Gaussian elimination with packed Uint32Array
+parity and dependency vectors, clz32 pivot selection and bounded XOR loops.
+Large searches (from 240 bits) collect the estimated relation target first.
+Their matrix uses one column per usable relation and one row per exponent
+parity constraint, including the sign. Filtering repeatedly:
+  - removes columns containing singleton rows, including resulting cascades;
+  - merges pairs hitting weight-two rows, while bounding fill-in;
+  - extracts zero-column dependencies and removes empty rows;
+  - prunes the heaviest excess columns, retaining 64 surplus columns;
+  - orders rows by decreasing weight and keeps the mapping back to every
+    original relation.
+
+The filtered matrix is solved with Montgomery block Lanczos, following
+msieve/common/lanczos. Blocks contain 32 vectors, using Uint32Array XORs,
+byte-table block products, and sparse row/column layouts. The 16 densest rows
+are temporarily omitted on matrices larger than 64 rows and restored during
+the final nullspace calculation. The three-block Lanczos recurrence handles
+singular blocks with generalized inverses; independent starting blocks are
+retried on failure. A direct inner product with the initial block replaces
+msieve's auxiliary small-matrix recurrence.
+
+With Threads greater than 1, every Lanczos iteration distributes both sparse
+products, B*v and transpose(B)*(B*v), across the selected worker pool,
+including the coordinator. Rows and columns are partitioned by nonzero count
+to balance the work. Each helper receives its sparse slices once per solve;
+vector blocks are copied to helpers and product slices are transferred back.
+The coordinator assembles the exact GF(2) result before the next recurrence
+step. Threads=1 uses the same recurrence with synchronous matrix products.
+This is one cooperative solve, rather than independent random solver races.
+
+Filtering, the small block recurrences, final nullspace combination,
+dependency checks and BigInt GCD extraction remain on the coordinator.
+Message overhead can outweigh the benefit on small matrices; increasing
+Threads is not a guarantee of a speedup. Matrix storage on helpers is
+partitioned, rather than a complete matrix copy per worker. Each helper also
+temporarily receives the current vector block.
+
+Candidate dependencies of B'B are combined into actual dependencies of B.
+Each dependency must be nonzero and pass an exact parity check against the
+full filtered matrix, then against the original matrix after expanding the
+filtering history. Only then is it used for BigInt square-congruence/GCD
+extraction. Four unsuccessful starts, insufficient filtered rank, or only
+trivial GCDs cause more relation collection; the original relations remain
+available. No approximate floating-point solver or Gaussian fallback is used
+for the large matrix.
+
+For each relation, (A*x+B)^2 = A*Q(x) modulo n. Compact MPQS carries q as a
+known square-root factor. SIQS adds the prime factors of A to each relation's
+exponents. Matched partials and graph cycles carry their paired large factors
+in the square root.
+Negative Q values use a sign column. GCD extraction uses the original cofactor
+and rejects trivial dependencies. No factor for a benchmark input is built in.
+
+Cofactor, polynomial and factor arithmetic uses BigInt. Sieve residues and
+modular inverses use exact Number arithmetic with moduli below 2^26, so
+products of two residues are below 2^52. Packed parity vectors use 32-bit
+integer operations. Approximate floating-point polynomial values only select
+sieve candidates; exact division and product checks validate the result.
+
+Numbers passing Miller-Rabin are probable primes, not primality certificates.
+For an odd composite, 30 independent uniform rounds have a false-prime
+probability at most 4^-30. Prime inputs are reported without attempting MPQS.
+
+Limits
+------
+110 digits is an input limit, NOT a promise of practical factoring time.
+Balanced semiprimes near that size are not practical for this browser MPQS.
+Inputs of that length with small factors or perfect powers may finish quickly.
+Performance depends heavily on factor sizes, the number and the computer.
+
+There is no fixed time limit. Work runs in Web Workers so Clear remains
+responsive. The single-large-prime matching cache is limited to 50,000 entries.
+Smaller searches recycle the matrix after factor-base size + 256 accepted
+relations if no nontrivial dependency has succeeded. Large searches retain
+the matrix and the double-prime forest; their memory grows with collected
+relations. An 86-digit job with several workers can need multiple gigabytes.
+Each extra thread also has its own factor-base/sieve buffers. Browser memory limits can prevent
+completion of larger jobs. Relations are kept in RAM only.
+
+Files and tests
+---------------
+MPQS.html / styles.css  : page and presentation
+app.js                 : validation, worker lifecycle and status display
+mpqs.js                : shared factoring engine and Blob Worker source
+matrix.js              : filtering, block Lanczos and dependency verification
+ecm.js                 : two-stage BigInt ECM, normal pretesting plans and curve workers
+
+
+Directly opening MPQS.html works.

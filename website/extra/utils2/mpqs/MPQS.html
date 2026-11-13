@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>MPQS · Integer factorization</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="matrix.js" defer></script>
+  <script src="ecm.js" defer></script>
+  <script src="mpqs.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="workspace">
+    <header class="heading">
+      <span class="eyebrow"><span class="brand-mark" aria-hidden="true">÷</span> MPQS</span>
+      <h1>Integer factorization</h1>
+      <p>Enter a composite number. Find the factors that make it.</p>
+    </header>
+
+    <section class="calculator" aria-label="MPQS factor calculator">
+      <form id="factor-form" novalidate>
+        <div class="field-heading">
+          <label for="composite">Composite</label>
+          <span id="digit-count" class="count">0 / 110 digits</span>
+        </div>
+        <div class="field-viewport">
+          <textarea id="composite" name="composite" rows="2" wrap="off"
+            inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false"
+            placeholder="Enter a whole number…"
+            aria-describedby="input-help digit-count input-error"></textarea>
+        </div>
+        <div class="input-notes">
+          <p id="input-help" class="hint">Up to 110 decimal digits. No commas or spaces between digits.</p>
+          <p id="input-error" class="error" aria-live="polite"></p>
+        </div>
+
+        <div class="field-heading output-heading">
+          <label for="factors">Factors</label>
+          <span class="read-only">Output only</span>
+        </div>
+        <div class="field-viewport">
+          <textarea id="factors" rows="2" wrap="off" readonly spellcheck="false"
+            placeholder="Your factors will appear here" aria-describedby="factor-help"></textarea>
+        </div>
+        <p id="factor-help" class="hint">Repeated factors are written as powers, for example 2^3 × 5.</p>
+
+        <div class="thread-setting">
+          <label for="threads">Threads</label>
+          <input id="threads" name="threads" type="number" min="1" max="32" step="1" value="1"
+            inputmode="numeric" aria-describedby="thread-help thread-error">
+          <p id="thread-help" class="hint">1–32 workers for SQUFOF, Brent-Rho, ECM, sieving and block Lanczos. More threads can help larger composites.</p>
+          <p id="thread-error" class="error" aria-live="polite"></p>
+        </div>
+
+        <div class="ecm-setting">
+          <label for="ecm-pretesting"><input id="ecm-pretesting" name="ecm-pretesting"
+            type="checkbox" checked aria-describedby="ecm-help"> ECM Pretesting</label>
+          <p id="ecm-help" class="hint">Try elliptic curves before MPQS for remaining composites above 45 digits. Uses YAFU’s normal search-depth target and the selected threads.</p>
+        </div>
+
+        <div class="actions">
+          <button id="clear" type="button" class="button button-clear">Clear</button>
+          <button id="factorize" type="submit" class="button button-factor" disabled>Factorize</button>
+        </div>
+      </form>
+
+      <section class="status-area" aria-labelledby="status-heading">
+        <div class="status-topline">
+          <h2 id="status-heading">Status</h2>
+          <span id="elapsed" class="elapsed"></span>
+        </div>
+        <p id="status" class="status-message" role="status" aria-live="polite" aria-atomic="true">Ready for a composite number.</p>
+        <p id="relation-summary" class="relation-summary" tabindex="0"
+          aria-label="Relation counts" aria-describedby="relation-progress-note">0 relations (0 full + 0 combined from 0 partial), need —</p>
+        <div class="relation-progress">
+          <div class="progress-heading">
+            <label for="relations-progress">Relation collection</label>
+            <span id="relation-percentage">—</span>
+          </div>
+          <progress id="relations-progress" value="0" max="100"
+            aria-describedby="relation-progress-note" aria-valuetext="No relation estimate available">0%</progress>
+        </div>
+        <p id="relation-progress-note" class="status-note">Full relations are directly smooth; combined relations come from partial matches or large-prime cycles. Partial counts include all partials collected in this search. The bar uses full + combined against the estimated target; factoring may finish earlier or need more relations.</p>
+      </section>
+    </section>
+
+    <footer>
+      <p>Runs locally in your browser. Clear also stops a running calculation.</p>
+      <p>Difficult composites can take a very long time, even below the 110-digit limit.</p>
+    </footer>
+    <noscript>This calculator requires JavaScript and a browser with BigInt support.</noscript>
+  </main>
+</body>
+</html>
